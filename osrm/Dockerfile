@@ -11,7 +11,7 @@
 #   - Runtime: shared-cpu-2x 8GB GRU = $42.79/mês (always-on, mapa em RAM)
 #   - Build: GHA público grátis (~25-30min processando)
 
-FROM osrm/osrm-backend:v5.27.1 AS builder
+FROM osrm/osrm-backend:v5.25.0 AS builder
 
 WORKDIR /data
 
@@ -36,7 +36,7 @@ RUN rm map.osm.pbf
 
 # ────────────────────────────────────────────────────────────────────────
 # Runtime stage
-FROM osrm/osrm-backend:v5.27.1
+FROM osrm/osrm-backend:v5.25.0
 
 WORKDIR /data
 
