@@ -4,14 +4,11 @@ primary_region = "gru"
 [build]
   dockerfile = "Dockerfile"
 
-# VROOM aponta pra OSRM público — sem hospedar OSRM próprio (por ora).
-# Trocar pra http://fleety-osrm.flycast:5000 quando subirmos OSRM Brasil
-# próprio em outro app Fly.io.
+# VROOM aponta pro OSRM próprio em outro app Fly.io na mesma região (GRU).
+# Endpoint configurado no config.yml (copiado pra /conf no Dockerfile).
+# VROOM_ROUTER=osrm (env) confirma o backend; host/port vêm do config.yml.
 [env]
   VROOM_ROUTER = "osrm"
-  OSRM_HOST = "router.project-osrm.org"
-  OSRM_PORT = "443"
-  OSRM_PROFILE = "driving"
 
 [http_service]
   internal_port = 3000

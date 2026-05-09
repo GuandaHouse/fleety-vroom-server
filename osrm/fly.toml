@@ -1,0 +1,39 @@
+app = "fleety-osrm"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 5000
+  force_https = false
+  # Always-on: OSRM precisa do mapa em RAM, scale-to-zero deletaria o
+  # contexto carregado e cada cold-start levaria ~30s. Custo always-on
+  # é fixo de qualquer jeito (paga RAM mesmo idle), então deixar ligado.
+  auto_stop_machines = "off"
+  auto_start_machines = false
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 100
+    soft_limit = 80
+
+[[vm]]
+  # Brasil completo (1.9GB PBF → ~6-8GB RAM em runtime com MLD).
+  # shared-cpu-2x 8GB GRU = $42.79/mês.
+  memory = "8gb"
+  cpu_kind = "shared"
+  cpus = 2
+
+[checks]
+  [checks.health]
+    type = "http"
+    port = 5000
+    # OSRM responde "Bad Request" em GET / sem params, mas com 200 OK
+    # em /route/v1/driving/0,0;1,1 (rota inválida → 200 com erro JSON).
+    # Health check apenas confirma que o processo aceita conexões.
+    path = "/route/v1/driving/-46.633,-23.55;-46.65,-23.56?overview=false"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "120s"

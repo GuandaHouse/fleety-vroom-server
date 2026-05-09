@@ -1,15 +1,20 @@
-name: Deploy VROOM to Fly.io
+name: Deploy OSRM to Fly.io
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'osrm/**'
+      - '.github/workflows/deploy-osrm.yml'
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy VROOM
+    name: Deploy OSRM (Brasil completo)
     runs-on: ubuntu-latest
+    # Build do Brasil completo demora ~30min (osrm-extract + partition +
+    # customize). Default GHA timeout é 6h, mais que suficiente.
     steps:
       - uses: actions/checkout@v4
 
@@ -18,9 +23,8 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # osrm-partition do Brasil completo passa de 16GB. ubuntu-latest free
-      # tem ~84GB em /, então criamos 16GB de swap pra OS não matar o build
-      # com SIGKILL (exit 137).
+      # osrm-partition Brasil completo passa de 16GB de RAM nos picos.
+      # Repo público dá 16GB; criamos 16GB swap em /swapfile pra evitar OOM.
       - name: Increase swap to 16GB
         run: |
           sudo swapoff -a
@@ -31,8 +35,9 @@ jobs:
           sudo swapon /swapfile
           free -h
 
-      - name: Deploy VROOM to Fly.io
+      - name: Deploy OSRM to Fly.io
         run: flyctl deploy --local-only
+        working-directory: osrm
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           DOCKER_BUILDKIT: '1'
