@@ -120,9 +120,10 @@ RUN git submodule update --init \
     && cp ../bin/vroom /usr/local/bin/vroom \
     && cd / && rm -rf /tmp/vroom
 
-# Install vroom-express (wrapper HTTP)
+# Install vroom-express (wrapper HTTP). Versiona separado do vroom — última
+# tag é v0.12.0 (vroom-express não acompanha 1:1 a versão do vroom-engine).
 WORKDIR /app
-RUN git clone --branch v1.14.0 --depth 1 https://github.com/VROOM-Project/vroom-express.git . \
+RUN git clone --branch v0.12.0 --depth 1 https://github.com/VROOM-Project/vroom-express.git . \
     && npm install --production --no-audit --no-fund
 
 # Copia dados OSRM processados do stage 1
