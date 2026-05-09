@@ -4,6 +4,15 @@ primary_region = "gru"
 [build]
   dockerfile = "Dockerfile"
 
+# VROOM aponta pra OSRM público — sem hospedar OSRM próprio (por ora).
+# Trocar pra http://fleety-osrm.flycast:5000 quando subirmos OSRM Brasil
+# próprio em outro app Fly.io.
+[env]
+  VROOM_ROUTER = "osrm"
+  OSRM_HOST = "router.project-osrm.org"
+  OSRM_PORT = "443"
+  OSRM_PROFILE = "driving"
+
 [http_service]
   internal_port = 3000
   force_https = true
@@ -17,11 +26,9 @@ primary_region = "gru"
     soft_limit = 20
 
 [[vm]]
-  # [vm-4gb 2026-05-09] Brasil completo carregado em RAM precisa ~2.5-3GB.
-  # 4GB cabe folgado. shared-cpu-1x 4GB = ~$10.70/mês teto, mas com
-  # auto_stop_machines + min_machines_running=0, custo real estimado
-  # ~$1-5/mês (idle 99% do tempo).
-  memory = "4gb"
+  # Imagem oficial não carrega mapa em RAM (só faz HTTP pro OSRM público).
+  # 512MB chega de sobra. Custo idle scale-to-zero ~$0/mês.
+  memory = "512mb"
   cpu_kind = "shared"
   cpus = 1
 
