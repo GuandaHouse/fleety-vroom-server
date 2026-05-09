@@ -61,7 +61,9 @@ COPY --from=builder /data/*.osrm* /data/
 
 EXPOSE 5000
 
-# osrm-routed --ip :: bind em IPv6 ALL interfaces.
-# Fly.io .flycast (rede privada entre apps da mesma org) resolve pra IPv6 6PN —
-# default osrm-routed escuta só IPv4 (0.0.0.0:5000), e VROOM falha conectar.
-CMD ["osrm-routed", "--algorithm", "mld", "--ip", "::", "/data/map.osrm"]
+# osrm-routed default escuta 0.0.0.0:5000 (IPv4). Fly.io public proxy
+# encaminha IPv4 → container OK. .flycast (IPv6 6PN entre apps da org)
+# NÃO funciona com bind IPv4-only — VROOM no fleety-vroom não consegue
+# conectar via fleety-osrm.flycast. Mitigation pendente: subir Oracle
+# Vinhedo (24GB grátis) e rodar VROOM+OSRM no mesmo host (localhost).
+CMD ["osrm-routed", "--algorithm", "mld", "/data/map.osrm"]
