@@ -61,5 +61,7 @@ COPY --from=builder /data/*.osrm* /data/
 
 EXPOSE 5000
 
-# osrm-routed com algoritmo MLD (mais leve em RAM que CH)
-CMD ["osrm-routed", "--algorithm", "mld", "/data/map.osrm"]
+# osrm-routed --ip :: bind em IPv6 ALL interfaces.
+# Fly.io .flycast (rede privada entre apps da mesma org) resolve pra IPv6 6PN —
+# default osrm-routed escuta só IPv4 (0.0.0.0:5000), e VROOM falha conectar.
+CMD ["osrm-routed", "--algorithm", "mld", "--ip", "::", "/data/map.osrm"]
