@@ -22,9 +22,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Brasil completo da Geofabrik — 1.9GB compressed em 2026-04-26.
+# Sudeste (SP/RJ/MG/ES) — 800MB compressed em 2026-04-26.
+# Brasil completo (1.9GB) precisaria 8GB+ RAM em runtime; org Fly.io tem
+# teto 4GB por machine. Sudeste cabe em 4GB e cobre 80%+ PIB BR (SP/RJ
+# em particular = caso de uso lavanderia atual). Quando promover plano
+# pra liberar 8GB OU migrar pra Oracle Cloud Always Free (24GB Vinhedo),
+# voltar pra brazil-latest.osm.pbf.
 RUN curl -L --fail \
-    https://download.geofabrik.de/south-america/brazil-latest.osm.pbf \
+    https://download.geofabrik.de/south-america/brazil/sudeste-latest.osm.pbf \
     -o map.osm.pbf
 
 # ────────────────────────────────────────────────────────────────────────
